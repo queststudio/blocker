@@ -1,17 +1,20 @@
+storage = require("storage")
+
 local port = 80
-local enabled = false
 print("Starting server version 1.0.0 at port ", port)
 
 function statusController (request, next) 
     if(request.path == "/status") then
         if(request.method == "GET") then
+            local enabled = storage.load()
             if(enabled) then
                 return {status=200, body="{\"status\":\"enabled\"}"}
             else
                 return {status=200, body="{\"status\":\"disabled\"}"}
             end
         elseif(request.method == "PUT") then
-            enabled = request.params.status == "enabled"
+            local enabled = request.params.status == "enabled"
+            storage.save(enabled)
             return {status=200}
         end
     else
